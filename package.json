@@ -1,0 +1,28 @@
+{
+  "name": "masterbackend",
+  "version": "1.0.0",
+  "description": "a basic app to deploy",
+  "keywords": [
+    "node",
+    "express"
+  ],
+  "homepage": "https://github.com/Bishuthapa/Backend#readme",
+  "bugs": {
+    "url": "https://github.com/Bishuthapa/Backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bishuthapa/Backend.git"
+  },
+  "license": "ISC",
+  "author": "BISHU THAPA",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
