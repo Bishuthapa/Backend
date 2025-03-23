@@ -16,14 +16,15 @@
   },
   "license": "ISC",
   "author": "BISHU THAPA",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
   }
 }
