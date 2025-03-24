@@ -19,12 +19,12 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "module": "^1.1.0",
     "mongodb": "^6.15.0",
     "mongoose": "^8.12.2",
     "nodemon": "^3.1.9"

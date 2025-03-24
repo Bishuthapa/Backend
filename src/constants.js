@@ -1,1 +1,1 @@
-export const DB_NAME = "naya-db"
+export const DB_NAME = "bishuDB";
