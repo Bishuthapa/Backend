@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
 
 
 
@@ -20,7 +21,7 @@ import { v2 as cloudinary } from 'cloudinary';
         return response;
     } catch (error) {
 
-        fs.unlinkSync(localPath);
+        fs.unlinkSync(localPath);//remove the file from the temp folder as the upload operation got failed
         return null;
         console.log(error);
     }
