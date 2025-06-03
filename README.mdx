@@ -46,6 +46,22 @@ First, create the `package.json` using the **`npm init`** command.
 
 Install the `node_modules` using the **`npm install i`** command.
 
+ Create .env file and add the following contents:
+
+```json
+{
+  "PORT": 3000
+}
+```
+
+Create a public folder for images and videos.
+In the public folder add .gitignore file.
+
+```json
+node_modules
+.env //add other files that you want to ignore
+```
+
  Now Create a Folder directory 
 
 > src
@@ -60,6 +76,14 @@ Install the `node_modules` using the **`npm install i`** command.
 
 Use nodemon to run the server. Install the dev dependencies.
 >To install nodemon use **`npm install -D nodemon`** command.
+
+ ---
+
+<br />
+
+It's time to create some folder such as controllers, db,models, routes, utils, and middleware.
+
+>mkdir controllers db models routes utils middleware
 
 
 
