@@ -6,6 +6,8 @@ import { ApiResponse } from "../utils/ApiRespones.js";
 import { request } from "express";
 
 const registerUser = asyncHandler(async (req, res) => {
+
+  //Steps:::::::
   //get user detial from frontend
   //check for validation  -non empty
   //chech if user already exist: Username, email
@@ -80,4 +82,17 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdUser, "User registered successfully."));
 });
 
-export { registerUser };
+const loginUser = asyncHandler(async (req, res) => {
+  //Steps:::::::::::::::::::
+  //get the data from the user
+  //check the user based on the username or email
+  //find email or username
+  //if the email or username doesn't exists on the database then redirect the user to the register page and give the error that user doesn't exists
+  //if exists then login and check the password that the user enter and compare to the database same username and password
+  //if the username and password is correct the redirect the user to the homepage and create the access and refresh token and send to the user through 
+  // the secure cookie? then give the error 
+
+
+});
+
+export { registerUser, loginUser };
