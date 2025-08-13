@@ -171,7 +171,30 @@ const logoutUser = asyncHandler(async (req, res) => {
    //2. Find the user based on the refresh token
    //3. Delete the refresh token from the database
    
-   
+   User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken : undefined
+      }
+    },
+    {
+      new: true
+    }
+  )
+
+  const options = {
+    httpOnly : true, //no js can access the cookie
+    secure: true //only sent over HTTPS
+  }
+
+  return res
+  .status(200)
+  .clearCookie("accssToken", options)
+  .clearCookie("refreshToken", options)
+  .json(new ApiResponse(200, {}, "User logged out sucessfully"));
+
 })
 
-export { registerUser, loginUser };
+
+export { registerUser, loginUser, logoutUser };
