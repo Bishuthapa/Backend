@@ -146,7 +146,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   return res
   .status(200)
-  .cookie("accssToken", accessToken, options)
+  .cookie("accessToken", accessToken, options)
   .cookie("refreshToken", refreshToken, options)
   .json (
     new ApiResponse(
@@ -171,7 +171,7 @@ const logoutUser = asyncHandler(async (req, res) => {
    //2. Find the user based on the refresh token
    //3. Delete the refresh token from the database
    
-   User.findByIdAndUpdate(
+   await User.findByIdAndUpdate(
     req.user._id,
     {
       $set: {
@@ -190,7 +190,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   return res
   .status(200)
-  .clearCookie("accssToken", options)
+  .clearCookie("accessToken", options)
   .clearCookie("refreshToken", options)
   .json(new ApiResponse(200, {}, "User logged out sucessfully"));
 
