@@ -144,7 +144,10 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly : true, //no js can access the cookie
     secure: true //only sent over HTTPS
   }
+  
+  console.log("User logged In successfully");
 
+//console.log("loggedInUser:", loggedInUser);
   return res
   .status(200)
   .cookie("accessToken", accessToken, options)
