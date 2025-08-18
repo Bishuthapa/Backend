@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiRespones.js";
 import { request } from "express";
 import jwt from "jsonwebtoken";
+import { upload } from "../middlewares/multer.middelware.js";
 
 const registerUser = asyncHandler(async (req, res) => {
 
@@ -251,4 +252,147 @@ const refreshAccessToken = asyncHandler(async (req, res) => { //create a new acc
 
 })
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken  };
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+
+   const {oldPassword, newPassword} = res.body();
+
+   const user = await User.findById(req.user?._id);
+
+   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+   if(!isPasswordCorrect){
+    throw new ApiError(400, "Invalid Password");
+   }
+
+
+   user.password = newPassword;
+
+   await user.save({validateBeforeSave: false});
+
+   return res
+   .status(200)
+   .json(
+    new ApiResponse(200, {} , "Password changed successfully")
+   )
+
+})
+
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+
+  return res
+  .status(200)
+  .json(200, req.user, "Current user fetch successfully")
+})
+
+
+const updateAccountDetails = asyncHandler(async(req, res) => {
+
+  const {fullName, email} = req.body;
+
+  if(!fullName || !email){
+    throw new ApiError(400, "All fields are required");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id, 
+    {
+      $set: {
+        fullName,
+        email : email
+      }
+    },
+    {new: true}
+  ).select("-password");
+
+  res
+  .status(200)
+  .json(200, user, "Account details updated successfully")
+})
+
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.path;
+
+  if(!avatarLocalPath){
+    throw new ApiError(400, "Avatar file is primary required.");
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if(!avatar.url){
+    throw new ApiError(400, "Error while uploading on avatar")
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      new : true
+    },
+
+    $set = {
+      avatar : avatar.url // just the url of the avatar not the whole object
+
+    }   
+  ).select("-password")
+
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(
+      200,
+      user,
+      "Avatar image updated sucessfully"
+    )
+  )
+
+})
+
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+  const coverImageLocalPath = req.file?.path;
+
+  if(!coverImageLocalPath){
+    throw new ApiError(400, "cover image file is primary required.");
+  }
+
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+  if(!coverImage.url){
+    throw new ApiError(400, "Error while uploading the image")
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      new : true
+    },
+
+    $set = {
+      coverImage : coverImage.url // just the url of the coverImage not the whole object
+
+    }   
+  ).select("-password")
+
+  
+  return res
+
+  .status(200)
+  .jsone(
+    new ApiResponse(
+      200,
+      user,
+      "cover image updated sucessfully"
+    )
+  )
+})
+
+export { registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  changeCurrentPassword,
+  getCurrentUser,
+  updateAccountDetails,
+  updateUserAvatar,
+  updateUserCoverImage
+};
