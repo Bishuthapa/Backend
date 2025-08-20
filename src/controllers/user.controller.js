@@ -387,6 +387,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   )
 })
 
+//export the user controller
 export { registerUser,
   loginUser,
   logoutUser,
@@ -397,3 +398,4 @@ export { registerUser,
   updateUserAvatar,
   updateUserCoverImage
 };
+
