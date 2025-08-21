@@ -3,7 +3,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiRespones.js";
-import { request } from "express";
 import jwt from "jsonwebtoken";
 import { upload } from "../middlewares/multer.middelware.js";
 
