@@ -115,7 +115,79 @@ const populateComment = await comment.populate("owner", "email");
 
   
 });
-const updateComment = asyncHandler(async (req, res) => {});
-const deleteComment = asyncHandler(async (req, res) => {});
+const updateComment = asyncHandler(async (req, res) => {
+    const {videoId} = req.params;
+
+  if(!videoId){
+    throw new ApiError(401, "Video ID is required");
+  }
+
+  const video = await Video.findById(videoId);
+
+  if(!video){
+    throw new ApiError(401, "Requested video does not exists");
+  }
+  
+  const {content}  = req.body;
+
+  if(!content || content?.trim() === ""){
+    throw new ApiError(401, "Content is required");
+  }
+
+  const comment = await Comment.findById(req.params.commentId);
+
+  if(!comment){
+    throw new ApiError(401, "Requested comment does not exists");
+  }
+
+  comment.content = content;
+  const updatedComment = await comment.save();
+  return res
+  .status(201)
+  .json(
+    new ApiResponse(
+      200, updatedComment,  "sucessfully updated the comment"
+    )
+  )
+ 
+
+});
+const deleteComment = asyncHandler(async (req, res) => {
+    const {videoId, commentId} = req.params;
+
+  if(!videoId){
+    throw new ApiError(401, "Video ID is required");
+  }
+
+  const video = await Video.findById(videoId);
+
+  if(!video){
+    throw new ApiError(401, "Requested video does not exists");
+  }
+
+  if(!commentId){
+    throw new ApiError(400, "Comment Id is required");
+  }
+
+
+ const comment = await Comment.findByIdAndDelete({
+  _id : commentId,
+  video: videoId,
+  owner : req.user?._id,
+ })
+
+ if(!comment){
+  throw new ApiError(404, "Comment not found or unauthorized to delete")
+ }
+
+return res
+.status(201)
+.json(
+  new ApiResponse(
+    200, comment, "Comment deleted successfully"
+  )
+);
+ 
+});
 
 export { getVideoComment, addComment, updateComment, deleteComment };
