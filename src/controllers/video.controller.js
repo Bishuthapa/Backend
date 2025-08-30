@@ -124,7 +124,13 @@ const publishVideo = asyncHandler(async (req, res) => {
 });
 
 const getVideoById = asyncHandler(async (req, res) => {
-  let { page = 1, limit = 10, shortType = "desc", shortBy ="createdAt", userId } = req.body;
+  let {
+    page = 1,
+    limit = 10,
+    shortType = "desc",
+    shortBy = "createdAt",
+    userId,
+  } = req.body;
 
   page = parseInt(page, 10);
   limit = parseInt(limit, 10);
@@ -134,9 +140,8 @@ const getVideoById = asyncHandler(async (req, res) => {
 
   const filter = {};
   if (userId && mongoose.isValidObjectId(userId)) {
-        filter.owner = new mongoose.Types.ObjectId(userId);
-    }
-
+    filter.owner = new mongoose.Types.ObjectId(userId);
+  }
 
   const videos = await Video.aggregate([
     {
@@ -191,8 +196,8 @@ const getVideoById = asyncHandler(async (req, res) => {
 });
 
 const updateVideoDetail = asyncHandler(async (req, res) => {
-    const { videoId, newTitle, newDescription } = req.body;
-     if(!videoId){
+  const { videoId, newTitle, newDescription } = req.body;
+  if (!videoId) {
     throw new ApiError(401, "Video ID is required");
   }
 
@@ -219,28 +224,62 @@ const updateVideoDetail = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Thumbnail file is required");
   }
 
-  const updateVideo = await Video.findByIdAndUpdate(videoId, {
-    title : newTitle,
-    description: newDescription,
-    videoFile: newuploadVideo?.url,
-    thumbnail: newuploadThumbnail?.url,
-    owner: req.user?._id,
-    isPublished: true,
-  }, 
-{
-    new: true
-});
+  const updateVideo = await Video.findByIdAndUpdate(
+    videoId,
+    {
+      title: newTitle,
+      description: newDescription,
+      videoFile: newuploadVideo?.url,
+      thumbnail: newuploadThumbnail?.url,
+      owner: req.user?._id,
+      isPublished: true,
+    },
+    {
+      new: true,
+    }
+  );
 
-if(!updateVideo){
+  if (!updateVideo) {
     throw new ApiError(404, "Requested video does not exists");
-}
+  }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updateVideo, "Video detail updated successfully"));
+    .json(
+      new ApiResponse(200, updateVideo, "Video detail updated successfully")
+    );
 });
 
+const deleteVideo = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  if (!videoId) {
+    throw new ApiError(401, "Video ID is required");
+  }
 
-const deleteVideo = asyncHandler(async (req, res) => {});
+  const video = await Video.findOneAndDelete({
+    _id: videoId,
+    owner: req.user?._id,
+  });
 
-export { getAllVideos, publishVideo, getVideoById, updateVideoDetail};
+  if (!video) {
+    throw new ApiError(404, "Requested video does not exists or you are not the owner of this video");
+  }
+
+  if (video.videoFilePublicId) {
+    await cloudinary.uploader.destroy(video.videoFilePublicId, {
+      resource_type: "video",
+    });
+  }
+
+  if (video.thumbnailPublicId) {
+    await cloudinary.uploader.destroy(video.thumbnailPublicId, {
+      resource_type: "image",
+    });
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video, "Video deleted successfully"));
+});
+
+export { getAllVideos, publishVideo, getVideoById, updateVideoDetail, deleteVideo };
