@@ -104,7 +104,8 @@ const addComment = asyncHandler(async (req, res) => {
  })
 
 const populateComment = await comment.populate("owner", "email");
-  res
+
+  return res
   .status(201)
   .json(
     new ApiResponse(
