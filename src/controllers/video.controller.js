@@ -190,8 +190,57 @@ const getVideoById = asyncHandler(async (req, res) => {
   );
 });
 
-const updateVideoDetail = asyncHandler(async (req, res) => {});
+const updateVideoDetail = asyncHandler(async (req, res) => {
+    const { videoId, newTitle, newDescription } = req.body;
+     if(!videoId){
+    throw new ApiError(401, "Video ID is required");
+  }
+
+  if (!req.files) {
+    throw new ApiError(400, "No video file is uploaded");
+  }
+
+  const newvideoLocalPath = req.files?.video[0]?.path;
+  if (!newvideoLocalPath) {
+    throw new ApiError(400, "Video file is required");
+  }
+
+  const newuploadVideo = await uploadOnCloudinary(newvideoLocalPath);
+  if (!newuploadVideo) {
+    throw new ApiError(400, "Video file is required");
+  }
+
+  const newthumbnailLocalPath = req.files?.thumbnail[0]?.path;
+  if (!newthumbnailLocalPath) {
+    throw new ApiError(400, "Thumbnail file is required");
+  }
+  const newuploadThumbnail = await uploadOnCloudinary(newthumbnailLocalPath);
+  if (!newuploadThumbnail) {
+    throw new ApiError(400, "Thumbnail file is required");
+  }
+
+  const updateVideo = await Video.findByIdAndUpdate(videoId, {
+    title : newTitle,
+    description: newDescription,
+    videoFile: newuploadVideo?.url,
+    thumbnail: newuploadThumbnail?.url,
+    owner: req.user?._id,
+    isPublished: true,
+  }, 
+{
+    new: true
+});
+
+if(!updateVideo){
+    throw new ApiError(404, "Requested video does not exists");
+}
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updateVideo, "Video detail updated successfully"));
+});
+
 
 const deleteVideo = asyncHandler(async (req, res) => {});
 
-export { getAllVideos, publishVideo, getVideoById};
+export { getAllVideos, publishVideo, getVideoById, updateVideoDetail};
