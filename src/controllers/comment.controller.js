@@ -171,7 +171,7 @@ const deleteComment = asyncHandler(async (req, res) => {
   }
 
 
- const comment = await Comment.findByIdAndDelete({
+ const comment = await Comment.findOneAndDelete({
   _id : commentId,
   video: videoId,
   owner : req.user?._id,
