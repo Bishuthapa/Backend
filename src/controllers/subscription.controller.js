@@ -80,6 +80,9 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   // controller to return subscriber list of a channel
+  // Fetch all subscribers of a channel with their details and subscription date
+  //by using the channel ID
+
   const { channelId } = req.params;
   if (!channelId || !isValidObjectId(channelId)) {
     throw new ApiError(400, "Channel does not exist");
@@ -89,14 +92,16 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   if (!channelExists) {
     throw new ApiError(404, "Channel not found");
   }
-
   const subscriberList = await Subscription.aggregate([
     {
+        //Filters the Subscription collection to include 
+        // only documents where channel matches the given channelId.
       $match: {
         channel: new mongoose.Types.ObjectId(channelId),
       },
     },
     {
+        //This attaches full user info to each subscription.
       $lookup: {
         from: "users",
         localField: "subscriber",
@@ -105,10 +110,12 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
       },
     },
     {
-      $unwind: "$subscriberInfo", //Converts the subscriberInfo array (from $lookup) into a single object.
+        //Converts the subscriberInfo array (from $lookup) into a single object.
+      $unwind: "$subscriberInfo", 
     },
     {
       $project: {
+       //Only return what you need, avoids sending the whole user doc.
         _id: 0,
         subscriberId: "$subscriberInfo._id",
         username: "$subscriberInfo.username",
@@ -118,6 +125,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     },
     {
       $sort: {
+        //Sorts the subscribers by subscribedAt in descending order
         subscribedAt: -1,
       },
     },
@@ -134,8 +142,12 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     );
 });
 
-// controller to return channel list to which user has subscribed
+
 const getSubscribedChannels = asyncHandler(async (req, res) => {
+// controller to return channel list to which user has subscribed
+// Fetch all channels a user is subscribed to with channel details and subscription date
+//by using the user ID
+
   const { subscriberId } = req.params;
 
   if (!subscriberId || !isValidObjectId(subscriberId)) {
