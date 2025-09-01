@@ -277,9 +277,46 @@ const deleteVideo = asyncHandler(async (req, res) => {
     });
   }
 
+  
   return res
     .status(200)
     .json(new ApiResponse(200, video, "Video deleted successfully"));
 });
 
-export { getAllVideos, publishVideo, getVideoById, updateVideoDetail, deleteVideo };
+import { Video } from "../models/video.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+
+const togglePublishStatus = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+
+  if (!videoId) {
+    throw new ApiError(400, "Video ID is required");
+  }
+
+  const video = await Video.findOne({
+    _id: videoId,
+    owner: req.user._id, // ensure only owner can toggle
+  });
+
+  if (!video) {
+    throw new ApiError(404, "Video not found or unauthorized");
+  }
+
+  // Toggle publish status
+  video.isPublished = !video.isPublished;
+  await video.save();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      video,
+      `Video publish status updated to ${video.isPublished ? "Published" : "Unpublished"}`
+    )
+  );
+});
+
+
+
+export { getAllVideos, publishVideo, getVideoById, updateVideoDetail, deleteVideo ,togglePublishStatus};
