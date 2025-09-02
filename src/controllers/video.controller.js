@@ -1,10 +1,10 @@
-import asyncHandler from "../utils/asyncHandler";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiRespones";
-import { Video } from "../models/video.model";
+import asyncHandler from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiRespones.js";
+import { Video } from "../models/video.model.js";
 import mongoose, { Mongoose } from "mongoose";
-import { User } from "../models/user.model";
-import { uploadOnCloudinary } from "../utils/cloudinary";
+import { User } from "../models/user.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
   let { page = 1, limit = 10, query, sortBy, shortType, userId } = req.query;
@@ -283,10 +283,6 @@ const deleteVideo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, video, "Video deleted successfully"));
 });
 
-import { Video } from "../models/video.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
