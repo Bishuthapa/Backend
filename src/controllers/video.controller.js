@@ -2,14 +2,20 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiRespones.js";
 import { Video } from "../models/video.model.js";
-import mongoose, { Mongoose } from "mongoose";
-import { User } from "../models/user.model.js";
+import mongoose from "mongoose";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
-// Get all videos with pagination, search, and sorting
+
 const getAllVideos = asyncHandler(async (req, res) => {
-  let { page = 1, limit = 10, query, sortBy = "createdAt", sortType = "desc", userId } = req.query;
+    let {
+    page = 1,
+    limit = 10,
+    query,
+    sortBy = "createdAt",
+    sortType = "desc",
+    userId,
+  } = req.query;
 
   page = parseInt(page, 10);
   limit = parseInt(limit, 10);
@@ -17,8 +23,9 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
   const filter = {};
   if (query) filter.title = { $regex: query, $options: "i" };
-  if (userId && mongoose.isValidObjectId(userId)) filter.owner = new mongoose.Types.ObjectId(userId);
-
+  if (userId && mongoose.isValidObjectId(userId))
+  if (userId && mongoose.isValidObjectId(userId))
+    filter.owner = mongoose.Types.ObjectId.createFromTime(Number(userId));
   const videos = await Video.aggregate([
     { $match: filter },
     {
@@ -44,7 +51,12 @@ const getAllVideos = asyncHandler(async (req, res) => {
       200,
       {
         videos,
-        pagination: { totalCount, totalPages, currentPage: page, perPage: limit },
+        pagination: {
+          totalCount,
+          totalPages,
+          currentPage: page,
+          perPage: limit,
+        },
       },
       "Videos fetched successfully"
     )
