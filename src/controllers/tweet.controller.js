@@ -49,7 +49,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
     },
     {
       $lookup: {
-        from: "user",
+        from: "users",
         localField: "owner",
         foreignField: "_id",
         as: "owner",

@@ -27,7 +27,13 @@ router.route("/")
 router
   .route("/:videoId")
   .get(getVideoById)
-  .patch(upload.single("thumbnail"),updateVideoDetail)
+  .patch(
+  upload.fields([
+    { name: "video", maxCount: 1 },
+    { name: "thumbnail", maxCount: 1 }
+  ]),
+  updateVideoDetail
+)
   .delete(deleteVideo);
 
   router.route("/toggle/publish/:videoId").patch(togglePublishStatus)

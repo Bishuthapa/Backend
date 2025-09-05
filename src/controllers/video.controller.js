@@ -110,19 +110,27 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 // Update video details
 const updateVideoDetail = asyncHandler(async (req, res) => {
-  const { videoId, title, description } = req.body;
-  if (!mongoose.isValidObjectId(videoId)) throw new ApiError(400, "Invalid video ID");
+  const { title, description } = req.body;
+  const { videoId } = req.params;  // take ID from URL params
+
+  if (!mongoose.isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video ID");
+  }
 
   const video = await Video.findOne({ _id: videoId, owner: req.user._id });
-  if (!video) throw new ApiError(404, "Video not found or unauthorized");
+  if (!video) {
+    throw new ApiError(404, "Video not found or unauthorized");
+  }
 
-  // Upload new video or thumbnail if provided
+  // Upload new video if provided
   if (req.files?.video) {
     const videoUpload = await uploadOnCloudinary(req.files.video[0].path, "video");
     video.videoFile = videoUpload.url;
     video.videoFilePublicId = videoUpload.public_id;
   }
 
+  
+  // Upload new thumbnail if provided
   if (req.files?.thumbnail) {
     const thumbnailUpload = await uploadOnCloudinary(req.files.thumbnail[0].path, "image");
     video.thumbnail = thumbnailUpload.url;
@@ -133,8 +141,10 @@ const updateVideoDetail = asyncHandler(async (req, res) => {
   if (description) video.description = description;
 
   await video.save();
+
   return res.status(200).json(new ApiResponse(200, video, "Video updated successfully"));
 });
+
 
 // Delete video
 const deleteVideo = asyncHandler(async (req, res) => {
