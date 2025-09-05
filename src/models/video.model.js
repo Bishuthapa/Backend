@@ -4,7 +4,7 @@
  import bcryptt from "bcrypt";
  
  const videoSchema = new Schema({
-    videoFile: {
+    video: {
         type: String, //URL
         required: true
     },

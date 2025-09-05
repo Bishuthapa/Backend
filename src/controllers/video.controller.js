@@ -67,21 +67,29 @@ const getAllVideos = asyncHandler(async (req, res) => {
 const publishVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
 
-  if (!title || !description) throw new ApiError(400, "Title and description are required");
-  if (!req.files || !req.files.video || !req.files.thumbnail) throw new ApiError(400, "Video and thumbnail files are required");
+  if (!title || !description)
+    throw new ApiError(400, "Title and description are required");
 
-  const videoUpload = await uploadOnCloudinary(req.files.video[0].path, "video");
-  const thumbnailUpload = await uploadOnCloudinary(req.files.thumbnail[0].path, "image");
+  if (!req.files || !req.files.video || !req.files.thumbnail)
+    throw new ApiError(400, "Video and thumbnail files are required");
+
+  let uploadedVideo, uploadedThumbnail;
+  try {
+    uploadedVideo = await uploadOnCloudinary(req.files.video[0].path, "video");
+    uploadedThumbnail = await uploadOnCloudinary(req.files.thumbnail[0].path, "image");
+  } catch (err) {
+    throw new ApiError(500, "File upload failed");
+  }
 
   const video = await Video.create({
     title,
     description,
-    videoFile: videoUpload.url,
-    videoFilePublicId: videoUpload.public_id,
-    thumbnail: thumbnailUpload.url,
-    thumbnailPublicId: thumbnailUpload.public_id,
+    video: uploadedVideo.url,
+    videoFilePublicId: uploadedVideo.public_id,
+    thumbnail: uploadedThumbnail.url,
+    thumbnailPublicId: uploadedThumbnail.public_id,
     owner: req.user._id,
-    duration: req.files.video[0].duration || 0,
+    duration: 0, // replace with real duration extraction if needed
     views: 0,
     isPublished: true,
   });
