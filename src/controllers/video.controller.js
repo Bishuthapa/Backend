@@ -24,7 +24,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
   const filter = {};
   if (query) filter.title = { $regex: query, $options: "i" };
   if (userId && mongoose.isValidObjectId(userId))
-  if (userId && mongoose.isValidObjectId(userId))
     filter.owner = mongoose.Types.ObjectId.createFromTime(Number(userId));
   const videos = await Video.aggregate([
     { $match: filter },
@@ -38,6 +37,17 @@ const getAllVideos = asyncHandler(async (req, res) => {
       },
     },
     { $unwind: "$owner" },
+    {
+      $project: {
+        _id: 1,
+        title: 1,
+        description: 1,
+        thumbnail: 1,
+        createdAt: 1,
+        owner: 1,
+
+      }
+    },
     { $sort: { [sortBy]: sortType } },
     { $skip: (page - 1) * limit },
     { $limit: limit },
