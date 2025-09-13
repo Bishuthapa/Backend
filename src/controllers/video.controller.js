@@ -6,9 +6,8 @@ import mongoose from "mongoose";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
-
 const getAllVideos = asyncHandler(async (req, res) => {
-    let {
+  let {
     page = 1,
     limit = 10,
     query,
@@ -22,9 +21,14 @@ const getAllVideos = asyncHandler(async (req, res) => {
   sortType = sortType === "asc" ? 1 : -1;
 
   const filter = {};
-  if (query) filter.title = { $regex: query, $options: "i" };
-  if (userId && mongoose.isValidObjectId(userId))
-    filter.owner = mongoose.Types.ObjectId.createFromTime(Number(userId));
+  if (query) {
+    filter.title = { $regex: query, $options: "i" };
+  }
+
+  if (userId && mongoose.isValidObjectId(userId)) {
+    filter.owner = new mongoose.Types.ObjectId(userId); // 
+  }
+
   const videos = await Video.aggregate([
     { $match: filter },
     {
@@ -45,8 +49,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         thumbnail: 1,
         createdAt: 1,
         owner: 1,
-
-      }
+      },
     },
     { $sort: { [sortBy]: sortType } },
     { $skip: (page - 1) * limit },
@@ -72,6 +75,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     )
   );
 });
+
 
 // Publish a new video
 const publishVideo = asyncHandler(async (req, res) => {
