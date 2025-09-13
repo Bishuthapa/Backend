@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { upload } from "../middlewares/multer.middelware.js";
-import { verifyJWT } from "../middlewares/auth.middelware.js";
+import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   getAllVideos,
   publishVideo,

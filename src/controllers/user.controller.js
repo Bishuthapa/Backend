@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiRespones.js";
 import jwt from "jsonwebtoken";
-import { upload } from "../middlewares/multer.middelware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 import mongoose from "mongoose";
 
 const registerUser = asyncHandler(async (req, res) => {
