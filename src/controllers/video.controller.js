@@ -39,6 +39,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         as: "owner",
         pipeline: [{ $project: { username: 1, avatar: 1 } }],
       },
+
     },
     { $unwind: "$owner" },
     {
@@ -47,6 +48,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         title: 1,
         description: 1,
         thumbnail: 1,
+        video: 1,
         createdAt: 1,
         owner: 1,
       },
