@@ -51,6 +51,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
         video: 1,
         createdAt: 1,
         owner: 1,
+        duration: 1,
       },
     },
     { $sort: { [sortBy]: sortType } },
