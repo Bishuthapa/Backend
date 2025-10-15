@@ -115,16 +115,31 @@ const publishVideo = asyncHandler(async (req, res) => {
 });
 
 // Get video by ID
-const getVideoById = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
-  if (!mongoose.isValidObjectId(videoId)) throw new ApiError(400, "Invalid video ID");
+// const getVideoByUserId = asyncHandler(async (req, res) => {
+//   const { videoId,userId } = req.params;
+//   if (!mongoose.isValidObjectId(videoId)) throw new ApiError(400, "Invalid video ID");
 
-  const video = await Video.findById(videoId).populate("owner", "username avatar");
-  if (!video) throw new ApiError(404, "Video not found");
+//   const video = await Video.findById(videoId).populate("owner", "username avatar");
+//   if (!video) throw new ApiError(404, "Video not found");
 
-  return res.status(200).json(new ApiResponse(200, video, "Video fetched successfully"));
+//   return res.status(200).json(new ApiResponse(200, video, "Video fetched successfully"));
+// });
+const getVideoByUserId = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  if (!mongoose.isValidObjectId(userId))
+    throw new ApiError(400, "Invalid user ID");
+
+  const videos = await Video.find({ owner: userId })
+    .populate("owner", "username avatar")
+    .sort({ createdAt: -1 });
+
+  if (!videos.length)
+    throw new ApiError(404, "No videos found for this user");
+
+  return res.status(200).json(
+    new ApiResponse(200, { videos }, "Videos fetched successfully")
+  );
 });
-
 // Update video details
 const updateVideoDetail = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
@@ -192,4 +207,4 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, video, `Video is now ${video.isPublished ? "Published" : "Unpublished"}`));
 });
 
-export { getAllVideos, publishVideo, getVideoById, updateVideoDetail, deleteVideo, togglePublishStatus };
+export { getAllVideos, publishVideo, getVideoByUserId, updateVideoDetail, deleteVideo, togglePublishStatus };
