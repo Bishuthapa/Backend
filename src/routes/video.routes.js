@@ -4,7 +4,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   getAllVideos,
   publishVideo,
-  getVideoById,
+  getVideoByUserId,
   updateVideoDetail,
   deleteVideo,
   togglePublishStatus
@@ -24,9 +24,10 @@ router.route("/")
   publishVideo
 );
 
+router.get("/user/:userId", getVideoByUserId);
+
 router
   .route("/:videoId")
-  .get(getVideoById)
   .patch(
   upload.fields([
     { name: "video", maxCount: 1 },
